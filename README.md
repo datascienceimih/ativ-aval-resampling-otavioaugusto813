@@ -11,7 +11,7 @@ Resolver os exercícios do livro Introduction to Statistical Learning with R (ht
 - No. 8 (todo);
 - No. 9 (todo).
 
-\*Obs.: Para calcular o intervalo de confiança da letra **(d)**, use a formula CF = \[Mu - 1.96\*SE(Mu) , Mu + 1.96\*SE(Mu)], isto é, use 1,96 ao invés de 2. ;)
+\*Obs.: Para calcular o intervalo de confiança da letra **(d)**, use a formula CI = \[Mu - 1.96\*SE(Mu) , Mu + 1.96\*SE(Mu)], isto é, use 1,96 ao invés de 2. ;)
 
 **Deadline**: 29 de abril (segunda-feira).
 
