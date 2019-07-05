@@ -1,0 +1,301 @@
+---
+title: "Trabalho Resampling Otávio"
+author: "Otávio"
+date: "4 de julho de 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+# Trabalho Resampling 
+# Machine Learning
+# Aluno: Otávio Alves
+
+# Resolver os exercícios do livro Introduction to Statistical Learning with R  a partir da página 198:
+
+# No. 5 (todo);
+# No. 6 (todo);
+# No. 8 (todo);
+# No. 9 (todo).
+# *Obs.: Para calcular o intervalo de confiança da letra (d), 
+# use a formula CI = [Mu - 1.96*SE(Mu) , Mu + 1.96*SE(Mu)], isto é, use 1,96 ao invés de 2. ;)
+
+# 5 -
+library(ISLR)
+data(Default)
+summary(Default)
+
+# a) 
+set.seed(1)
+attach(Default)
+
+
+
+lm1 = glm(default ~ income + balance, data = Default, family= binomial)
+summary(lm1)
+
+# b)
+nrow(Default)
+set.seed(1)
+# i.
+train = sample(10000, 5000)
+#  ii.
+lm2 = glm(default ~ income + balance, data=Default, family=binomial, subset=train)
+# iii.
+prev = predict.glm(lm2, Default[-train], type="response")
+prev2 = ifelse(prev > 0.5, "Yes", "No")
+# iv.
+mean(Default[-train,]$default != prev2)
+
+
+
+# c) 
+# primeiro
+set.seed(2)
+# i.
+train = sample(10000, 5000)
+#  ii.
+lm2 = glm(default ~ income + balance, data=Default, family=binomial, subset=train)
+# iii.
+prev = predict.glm(lm2, Default[-train], type="response")
+prev2 = ifelse(prev > 0.5, "Yes", "No")
+# iv.
+mean(Default[-train,]$default != prev2)
+
+# segundo
+
+set.seed(3)
+# i.
+train = sample(10000, 5000)
+#  ii.
+lm2 = glm(default ~ income + balance, data=Default, family=binomial, subset=train)
+# iii.
+prev = predict.glm(lm2, Default[-train], type="response")
+prev2 = ifelse(prev > 0.5, "Yes", "No")
+# iv.
+mean(Default[-train,]$default != prev2)
+
+# terceiro
+
+set.seed(4)
+
+# i.
+train = sample(10000, 5000)
+#  ii.
+lm2 = glm(default ~ income + balance, data=Default, family=binomial, subset=train)
+# iii.
+prev = predict.glm(lm2, Default[-train], type="response")
+prev2 = ifelse(prev > 0.5, "Yes", "No")
+# iv.
+mean(Default[-train,]$default != prev2)
+
+# com sementes diferentes os resultados são muito próximos, 
+#diferindo-se apenas nas casas centesimais.
+
+# d)
+
+set.seed(1)
+train = sample(10000, 5000)
+lm3 = glm(default ~ income + balance + student, data=Default, family = binomial, subset=train)
+attach(Default)
+str(Default)
+prob3 <- predict(lm3, Default[-train,], type="response")
+pred3 <- ifelse(prob3 > 0.5, "Yes", "No")
+mean(Default[-train,]$default != pred3)
+
+# se compararmos o erro de teste vemos que o erro diminui quando
+# incluímos a variável student, embora não seja um aumento substancial
+
+# 6
+
+set.seed(1)
+# a)
+
+lm4 = glm(default ~ income + balance, family = binomial)
+summary(lm4)
+
+# b)
+
+library(boot)
+boot.fn = function(data, index) return(coef(glm(default ~ income + balance, 
+                                                data = data, family = binomial, subset = index)))
+
+# c)
+
+boot(Default, boot.fn, 50)
+
+# d) 
+# os erros padrão são muito similares entre o bootstrat e o summary() da regressão linear.
+
+
+
+# 8 - 
+
+# a)
+
+set.seed(1)
+y = rnorm(100)
+x = rnorm(100)
+y = x - 2 * x^2 + rnorm(100)
+
+#  n é o número de observações, isto é, o número de linhas de x=100
+# p = 2
+
+
+# b)
+plot(x,y)
+
+# há, claramente, uma curva com a concavidade virada para baixo, 
+# com uma ascendente, um vertice,
+# e, depois, uma queda. Uma típica função de segundo grau
+
+# c)
+
+
+
+# i. regressão linear
+
+library(boot)
+
+Data = data.frame(x, y)
+set.seed(1)
+glm.fit = glm(y ~ x)
+cv.glm(Data, glm.fit)$delta
+
+# # regressão polinomial grau 2
+
+glm.fit = glm(y ~ poly(x, 2))
+cv.glm(Data, glm.fit)$delta
+
+
+
+# terceiro grau
+
+glm.fit = glm(y ~ poly(x, 3))
+cv.glm(Data, glm.fit)$delta
+
+
+# quarto grau
+
+glm(y~ poly(x, 4))
+cv.glm(Data, glm.fit)$delta
+
+
+# d)
+
+set.seed(8)
+
+# primeiro grau
+glm.fit = glm(y ~ x)
+cv.glm(Data, glm.fit)$delta
+
+# segundo grau
+
+glm.fit = glm(y ~ poly(x, 2))
+cv.glm(Data, glm.fit)$delta
+
+# terceiro grau
+
+glm.fit = glm(y ~ poly(x, 3))
+cv.glm(Data, glm.fit)$delta
+
+
+
+# quarto grau
+
+glm.fit = glm(y ~ poly(x, 4))
+cv.glm(Data, glm.fit)$delta
+
+# em todos os casos os resultados para o cross validation, porém com outro seed, são similares.
+
+# e)
+
+# o erro padrão para a polinomial de segudo grau é o menor, o que era esperado, já que a função criada inicialmente
+# é de segundo grau.
+
+# f) 
+
+fit0 = lm(y ~ poly(x,4))
+summary(fit0)
+# a partir da análise dos coeficientes, tanto do summary() quanto pelo cross-validation, percebe-se que os coeficientes com poder
+# explicativo significativo são de grau 1 e de grau 2, já que possuem valores menores do que 0.05 para o p-valor.
+
+
+# 9
+
+library(MASS)
+summary(Boston)
+set.seed(1)
+attach(Boston)
+
+# a)
+
+media = mean(medv)
+media
+
+# b)
+
+medv.erro = sd(medv)/sqrt(length(medv))
+medv.erro
+
+# c)
+
+boot.fn = function(data, index) return(mean(data[index]))
+library(boot)
+bstrap = boot(medv, boot.fn, 1000)
+bstrap
+
+# d)
+
+
+boot.res$t0 - 2*sd(boot.res$t)  # lower bound
+boot.res$t0 + 2*sd(boot.res$t)  # upper bound
+t.test(Boston$medv)
+
+## o erro padrão baseado no desvio padrão dividido pela raiz quadrado do número de observações 
+#  é muito similar ao erro calculado utilizando bootstrap
+
+# e)
+
+t.test(medv)
+
+# f)
+
+boot.fn = function(data, index) return(median(data[index]))
+boot(medv, boot.fn, 1000)
+
+# a estimativa da mediana feito com bootstrap apresentou retorno de 21.2 e desvio padrão de 0.38.
+
+# g)
+
+medv.tenth = quantile(medv, c(0.1))
+medv.tenth
+# a estimativa para o décimo percentil é 12.75
+
+# h)
+
+boot.fn = function(data, index) return(quantile(data[index], c(0.1)))
+boot(medv, boot.fn, 1000)
+
+## décimo percentual de 12.75 com SE de 0.511. Pequeno erro medio relativo a decima percentual.
+# 
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
